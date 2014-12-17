@@ -1,8 +1,10 @@
 
-(defun setup-pearpro ()
-  (interactive)
-  (shell-command "/Applications/Emacs.app/Contents/MacOS/Emacs -Q -l ~/.emacs.d/pear/init.el &"))
+(defvar pp-command-emacs "/Applications/Emacs.app/Contents/MacOS/Emacs")
 
-;; ここにペアプロ用のものを読みこむコードを書く？
+(defvar pp-pear-setting-file "~/.emacs.d/pear/init.el")
+
+(defun start-pearpro ()
+  (interactive)
+  (shell-command (concat pp-command-emacs " -Q -l " pp-pear-setting-file " &")))
 
 
