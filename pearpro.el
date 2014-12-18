@@ -1,6 +1,7 @@
 ;;; package --- 
 ;;; Commentary:
 ;;; Code:
+(require 'f)
 
 (defvar pearpro-mode nil)
 
@@ -10,11 +11,29 @@
 
 (defvar pp-pear-setting-file "~/.emacs.d/pear/init.el")
 
-(defvar pp-file "~/Dropbox/.emacs.d/dev/pearpro/pear.el")
+(defvar pp-preload-file "~/.emacs.d/pp-preload.el")
+
+(defvar pp-file "~/Dropbox/.emacs.d/dev/pearpro/pearpro.el")
 
 (defun start-pearpro ()
   (interactive)
-  (shell-command (concat pp-command-emacs " -Q -l " pp-pear-setting-file " -l " pp-file " &")))
+  (pp-export-load-path)
+  (shell-command
+   (concat pp-command-emacs
+           " -Q -l " pp-preload-file
+           " -l " pp-pear-setting-file
+           " -l " pp-file " &")))
+
+(defun pp-export-load-path ()
+  (with-temp-buffer
+    (let ((tmp-load-path load-path))
+      (while (car tmp-load-path)
+        (insert
+         (concat
+          "(add-to-list 'load-path \""
+          (car tmp-load-path) "\")\n"))
+        (setq tmp-load-path (cdr tmp-load-path)))
+    (write-region (point-min) (point-max) pp-preload-file))))
 
 (define-minor-mode pearpro-mode
   "pearpro-mode"
