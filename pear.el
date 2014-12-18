@@ -4,9 +4,11 @@
 
 (defvar pp-pear-setting-file "~/.emacs.d/pear/init.el")
 
+(defvar pp-file "~/Dropbox/.emacs.d/dev/pearpro/pear.el")
+
 (defun start-pearpro ()
   (interactive)
-  (shell-command (concat pp-command-emacs " -Q -l " pp-pear-setting-file " &")))
+  (shell-command (concat pp-command-emacs " -Q -l " pp-pear-setting-file " -l " pp-file " &")))
 
 (define-minor-mode pearpro-mode
   "pearpro-mode"
