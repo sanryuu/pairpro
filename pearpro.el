@@ -1,3 +1,7 @@
+;;; package --- 
+;;; Commentary:
+;;; Code:
+
 (defvar pearpro-mode nil)
 
 (defvar pp-mode-timer nil)
@@ -32,3 +36,7 @@
 
 (defun pp-sync ()
   )
+
+(provide 'pearpro)
+
+;;; pearpro.el ends here
