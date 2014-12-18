@@ -1,5 +1,7 @@
 (defvar pearpro-mode nil)
 
+(defvar pp-mode-timer nil)
+
 (defvar pp-command-emacs "/Applications/Emacs.app/Contents/MacOS/Emacs")
 
 (defvar pp-pear-setting-file "~/.emacs.d/pear/init.el")
@@ -18,7 +20,15 @@
     (pearpro-mode-end)))
 
 (defun pearpro-mode-start ()
-  )
+  (setq pp-mode-timer
+        (run-with-idle-timer
+         0.1
+         t
+         'pp-sync)))
 
 (defun pearpro-mode-end ()
+  (cancel-timer pp-mode-timer))
+
+
+(defun pp-sync ()
   )
