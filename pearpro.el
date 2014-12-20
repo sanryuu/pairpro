@@ -12,6 +12,7 @@
 (defvar pp-pear-setting-file "~/.emacs.d/pear/init.el")
 
 (defvar pp-preload-file "~/.emacs.d/pp-preload.el")
+(defvar pp-postload-file "~/.emacs.d/pp-postload.el")
 
 (defvar pp-file "~/Dropbox/.emacs.d/dev/pearpro/pearpro.el")
 
@@ -19,16 +20,37 @@
 
 (defun start-pearpro ()
   (interactive)
+  (pp-write-sync-file t (not pp-gest-flag))
+  (pp-write-preload-file)
+  (pp-write-postload-file)
+  (pp-start-pearpro-shell-command))
+
+(defun pp-write-preload-file ()
   (f-write
    (concat
     (pp-get-gest-flag)
     (pp-get-export-load-path))
-   'utf-8 pp-preload-file)
+   'utf-8 pp-preload-file))
+
+(defun pp-write-postload-file ()
+  (f-write
+   (concat
+    "(switch-to-buffer\n"
+    "  (get-buffer-create\n"
+    "    " (concat "\"*" (pp-buffer-file-name) "*\"")
+    "))\n"
+    "(pearpro-mode)\n"
+    "(pp-read-sync-file t (not pp-gest-flag))\n")
+    'utf-8 pp-postload-file))
+
+(defun pp-start-pearpro-shell-command ()
   (shell-command
    (concat pp-command-emacs
            " -Q -l " pp-preload-file
            " -l " pp-pear-setting-file
-           " -l " pp-file " &")))
+           " -l " pp-file
+           " -l " pp-postload-file
+           " &")))
 
 (defun pp-get-export-load-path ()
   "ホスト側のload-pathをエクスポートできるようにELispを取得"
@@ -113,11 +135,16 @@ is_share: 共有ファイルかどうかt,nil
 is_host: 自分がホストかどうかt,nil"
   (concat
    sync-file-dir
-   (f-filename (buffer-file-name))
+   (pp-buffer-file-name)
    (if (not is-share)
        (if is-host
            ".host"
          ".gest"))))
+
+(defun pp-buffer-file-name ()
+  (if (buffer-file-name)
+      (f-filename (buffer-file-name))
+    (replace-regexp-in-string "*" "" (buffer-name))))
 
 (defun pp-write-sync-file (is-share is-host)
   "同期用のファイルへ書き込み
