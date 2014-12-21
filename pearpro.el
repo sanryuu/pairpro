@@ -15,6 +15,9 @@
 (defvar pp-postload-file "~/.emacs.d/pp-postload.el")
 
 (defvar pp-file "~/Dropbox/.emacs.d/dev/pearpro/pearpro.el")
+(defvar pp-sync-file-dir "/tmp/")
+(defvar pp-tmp-file-dir "/tmp/cache/")
+
 
 (defvar pp-gest-flag nil)
 
@@ -35,11 +38,18 @@
 (defun pp-write-postload-file ()
   (f-write
    (concat
+    ;; find-fileするために一時書き出し
+    "(f-write\n"
+    "  (f-read \"" (f-this-file) "\" 'utf-8)\n"
+    "  'utf-8\n"
+    "  (concat \"" pp-tmp-file-dir "\" \"" (f-filename (f-this-file)) "\"))\n"
+    ;; hookを動かすためにfind-file
     "(switch-to-buffer\n"
-    "  (get-buffer-create\n"
-    "    " (concat "\"*" (pp-buffer-file-name) "*\"")
-    "))\n"
+    "  (find-file-noselect\n"
+    "    (concat \"" pp-tmp-file-dir "\" \"" (f-filename (f-this-file)) "\")))\n"
+    ;; ペアプロモードの開始
     "(pearpro-mode)\n"
+    ;; バッファ共有用のファイルを読み出し
     "(pp-read-sync-file t (not pp-gest-flag))\n")
     'utf-8 pp-postload-file))
 
@@ -127,14 +137,12 @@
           (pp-read-sync-file t (not pp-gest-flag))
           (pp-write-sync-file t (not pp-gest-flag))))))
 
-(defvar sync-file-dir "/tmp/")
-
 (defun pp-get-sync-file-name (is-share is-host)
   "同期用共有ファイル名の取得
 is_share: 共有ファイルかどうかt,nil
 is_host: 自分がホストかどうかt,nil"
   (concat
-   sync-file-dir
+   pp-sync-file-dir
    (pp-buffer-file-name)
    (if (not is-share)
        (if is-host
@@ -142,9 +150,7 @@ is_host: 自分がホストかどうかt,nil"
          ".gest"))))
 
 (defun pp-buffer-file-name ()
-  (if (buffer-file-name)
-      (f-filename (buffer-file-name))
-    (replace-regexp-in-string "*" "" (buffer-name))))
+  (f-filename (buffer-file-name)))
 
 (defun pp-write-sync-file (is-share is-host)
   "同期用のファイルへ書き込み
