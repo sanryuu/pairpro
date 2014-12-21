@@ -3,8 +3,8 @@
 ;;; Code:
 (require 'f)
 
-(defvar pearpro-mode nil)
-(defvar pearpro-online-mode nil
+(defvar pairpro-mode nil)
+(defvar pairpro-online-mode nil
   "オンラインで同期")
 
 (defvar pp-mode-timer nil)
@@ -12,7 +12,7 @@
 (defvar pp-command-emacs "/Applications/Emacs.app/Contents/MacOS/Emacs"
   "Emacs起動のコマンド")
 
-(defvar pp-pear-setting-file "~/.emacs.d/pear/init.el"
+(defvar pp-pair-setting-file "~/.emacs.d/pair/init.el"
   "ゲストの設定ファイルのPath")
 
 
@@ -22,8 +22,8 @@
 (defvar pp-postload-file "~/.emacs.d/pp-postload.el"
   "ゲスト用のペアプロの事後処理ファイルPath")
 
-(defvar pp-file "~/Dropbox/.emacs.d/dev/pearpro/pearpro.el"
-  "pearpro.elのファイルPath")
+(defvar pp-file "~/Dropbox/.emacs.d/dev/pairpro/pairpro.el"
+  "pairpro.elのファイルPath")
 
 (defvar pp-sync-file-dir "/tmp/"
   "共有ファイルのディレクトリ")
@@ -31,19 +31,19 @@
   "ゲスト用の一時ファイルのディレクトリ")
 
 (defvar pp-share-server-url
-  "http://hostname/server.php
+  "http://hostname/server.php"
   "ファイル共有サーバのURL")
 
 (defvar pp-gest-flag nil)
 
-(defun pp-start-pearpro ()
+(defun pp-start-pairpro ()
   (interactive)
   (pp-write-sync-file t (not pp-gest-flag))
-  (if (not pearpro-mode)
-      (pearpro-mode))
+  (if (not pairpro-mode)
+      (pairpro-mode))
   (pp-write-preload-file)
   (pp-write-postload-file)
-  (pp-start-pearpro-shell-command))
+  (pp-start-pairpro-shell-command))
 
 (defun pp-write-preload-file ()
   (f-write
@@ -65,16 +65,16 @@
     "  (find-file-noselect\n"
     "    (concat \"" pp-tmp-file-dir "\" \"" (f-filename (f-this-file)) "\")))\n"
     ;; ペアプロモードの開始
-    "(pearpro-mode)\n"
+    "(pairpro-mode)\n"
     ;; バッファ共有用のファイルを読み出し
     "(pp-read-sync-file t (not pp-gest-flag))\n")
     'utf-8 pp-postload-file))
 
-(defun pp-start-pearpro-shell-command ()
+(defun pp-start-pairpro-shell-command ()
   (shell-command
    (concat pp-command-emacs
            " -Q -l " pp-preload-file
-           " -l " pp-pear-setting-file
+           " -l " pp-pair-setting-file
            " -l " pp-file
            " -l " pp-postload-file
            " &")))
@@ -96,21 +96,21 @@
   "ゲスト判定ができるように設定するElisp取得"
   "(setq pp-gest-flag t)\n")
 
-(define-minor-mode pearpro-mode
-  "pearpro-mode"
+(define-minor-mode pairpro-mode
+  "pairpro-mode"
   :lighter " pp" ; for mode line
-  (if pearpro-mode
-      (pearpro-mode-start)
-    (pearpro-mode-end)))
+  (if pairpro-mode
+      (pairpro-mode-start)
+    (pairpro-mode-end)))
 
-(defun pearpro-mode-start ()
+(defun pairpro-mode-start ()
   (setq pp-mode-timer
         (run-with-idle-timer
          0.1
          t
          'pp-sync)))
 
-(defun pearpro-mode-end ()
+(defun pairpro-mode-end ()
   (cancel-timer pp-mode-timer))
 
 (defun pp-sync ()
@@ -190,7 +190,7 @@ is_host: 自分がホストかどうかt,nil"
         (url-retrieve pp-share-server-url
                       '(lambda (status)
                          (kill-buffer (current-buffer))))))
-"
+
 ;; 同期用のファイルを読み込み
 (defun pp-read-sync-file (is-share is-host)
   (let ((current-point (point)))
@@ -224,6 +224,6 @@ is_host: 自分がホストかどうかt,nil"
 (defun pp-get-current-buffer-string ()
   (buffer-substring-no-properties (point-min) (point-max)))
 
-(provide 'pearpro)
+(provide 'pairpro)
 
-;;; pearpro.el ends here
+;;; pairpro.el ends here
