@@ -4,6 +4,8 @@
 (require 'f)
 
 (defvar pearpro-mode nil)
+(defvar pearpro-online-mode nil
+  "オンラインで同期")
 
 (defvar pp-mode-timer nil)
 
@@ -28,6 +30,9 @@
 (defvar pp-tmp-file-dir "/tmp/cache/"
   "ゲスト用の一時ファイルのディレクトリ")
 
+(defvar pp-share-server-url
+  "http://hostname/server.php
+  "ファイル共有サーバのURL")
 
 (defvar pp-gest-flag nil)
 
@@ -172,6 +177,20 @@ is_host: 自分がホストかどうかt,nil"
    (point-min) (point-max)
    (pp-get-sync-file-name is-share is-host) nil 1))
 
+(defun pp-post-my-code (file-name body)
+  "サーバにポストする
+(pp-post-my-code \"hoge.el\" \"hogefuga\")"
+  (let ((url-request-method "POST")
+        (url-request-extra-headers
+         '(("Content-Type" . "application/x-www-form-urlencoded")))
+        (url-request-data
+         (format "name=%s&body=%s"
+                 (url-hexify-string file-name)
+                 (url-hexify-string body))))
+        (url-retrieve pp-share-server-url
+                      '(lambda (status)
+                         (kill-buffer (current-buffer))))))
+"
 ;; 同期用のファイルを読み込み
 (defun pp-read-sync-file (is-share is-host)
   (let ((current-point (point)))
@@ -180,6 +199,22 @@ is_host: 自分がホストかどうかt,nil"
      (pp-get-sync-file-name is-share is-host))
     (goto-char current-point)
     ))
+
+(defun pp-get-pair-code (file-name)
+  "サーバにからペアのコードを取得する
+(pp-get-pair-code \"hoge.el\")"
+  (let ((response))
+    (url-retrieve
+      (concat pp-share-server-url
+              "?"
+              (format "name=%s"
+                      (url-hexify-string file-name)))
+     '(lambda (status)
+        (goto-line 9) ;; 8行目まではbodyでないため
+        (setq tmp
+          (buffer-substring-no-properties (point) (point-max)))
+        (kill-buffer (current-buffer))))
+      response))
 
 ;; 同期用ファイルの文字列の取得
 (defun pp-get-sync-file-string (is-share is-host)
