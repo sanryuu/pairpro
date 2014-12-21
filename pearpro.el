@@ -7,16 +7,26 @@
 
 (defvar pp-mode-timer nil)
 
-(defvar pp-command-emacs "/Applications/Emacs.app/Contents/MacOS/Emacs")
+(defvar pp-command-emacs "/Applications/Emacs.app/Contents/MacOS/Emacs"
+  "Emacs起動のコマンド")
 
-(defvar pp-pear-setting-file "~/.emacs.d/pear/init.el")
+(defvar pp-pear-setting-file "~/.emacs.d/pear/init.el"
+  "ゲストの設定ファイルのPath")
 
-(defvar pp-preload-file "~/.emacs.d/pp-preload.el")
-(defvar pp-postload-file "~/.emacs.d/pp-postload.el")
 
-(defvar pp-file "~/Dropbox/.emacs.d/dev/pearpro/pearpro.el")
-(defvar pp-sync-file-dir "/tmp/")
-(defvar pp-tmp-file-dir "/tmp/cache/")
+(defvar pp-preload-file "~/.emacs.d/pp-preload.el"
+  "ゲスト用のペアプロの事前処理ファイルPath")
+
+(defvar pp-postload-file "~/.emacs.d/pp-postload.el"
+  "ゲスト用のペアプロの事後処理ファイルPath")
+
+(defvar pp-file "~/Dropbox/.emacs.d/dev/pearpro/pearpro.el"
+  "pearpro.elのファイルPath")
+
+(defvar pp-sync-file-dir "/tmp/"
+  "共有ファイルのディレクトリ")
+(defvar pp-tmp-file-dir "/tmp/cache/"
+  "ゲスト用の一時ファイルのディレクトリ")
 
 
 (defvar pp-gest-flag nil)
