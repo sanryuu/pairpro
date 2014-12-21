@@ -31,9 +31,11 @@
 
 (defvar pp-gest-flag nil)
 
-(defun start-pearpro ()
+(defun pp-start-pearpro ()
   (interactive)
   (pp-write-sync-file t (not pp-gest-flag))
+  (if (not pearpro-mode)
+      (pearpro-mode))
   (pp-write-preload-file)
   (pp-write-postload-file)
   (pp-start-pearpro-shell-command))
